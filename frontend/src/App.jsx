@@ -1,31 +1,17 @@
 import './App.css'
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import Home from './pages/Home'; 
+import Planner from './pages/Planner'; 
+import Flashcards from './pages/Flashcards';
+import Quizzes from './pages/Quizzes';
+import Progress from './pages/Progress';
+
 
 const logo = {
   name: "All Nighter",
   imageUrl: '/logo.png',
   imageSize: 85,
 };
-
-function Home() {
-  return <h2>Home Page Content</h2>;
-}
-
-function Planner() {
-  return <h2>Planner Page Content</h2>;
-}
-
-function Flashcards() {
-  return <h2>Flashcard Page Content</h2>;
-}
-
-function Quizzes() {
-  return <h2>Quiz Page Content</h2>;
-}
-
-function Progress() {
-  return <h2>Progress Page Content</h2>;
-}
 
 export default function App() {
   return (
