@@ -1,3 +1,8 @@
 export default function Home() {
-  return <h2>This is the Home Page Content</h2>;
+  return (
+    <div className="home-container">
+      <h2>Welcome to All Nighter!</h2>
+      <p>Use the planner, flashcards, quizzes, and progress tracker to study efficiently.</p>
+    </div>
+  );
 }
