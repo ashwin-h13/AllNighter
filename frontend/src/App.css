@@ -1,6 +1,14 @@
 body {
   font-family: 'Roboto', sans-serif;
+  background-color: #9754cb
 }
+
+.title-link {
+  text-decoration: none;
+  color: inherit; 
+  cursor: pointer;
+}
+
 
 .navbar {
   position: fixed;
@@ -8,7 +16,7 @@ body {
   left: 0;
   right: 0;
   height: 70px;
-  background-color: #682bd7; 
+  background-color: #6237a0; 
   display: flex;
   justify-content: space-between;
   align-items: center;
