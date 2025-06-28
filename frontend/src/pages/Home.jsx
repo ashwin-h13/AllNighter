@@ -1,148 +1,120 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from "react";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase/firebaseConfig";
+import { onAuthStateChanged } from "firebase/auth";
+import { signOut } from "firebase/auth";
+
 
 export default function Home() {
-  const [formType, setFormType] = useState('signup'); // 'signup' or 'signin'
-  const [form, setForm] = useState({ username: '', email: '', password: '' });
-  const [message, setMessage] = useState('');
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+  const [isSignUp, setIsSignUp] = useState(true);
+  const [user, setUser] = useState(null);
 
-  function handleChange(e) {
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+
+    return () => unsubscribe(); // cleanup listener on unmount
+  }, []);
+
+  const isAuthenticated = !!user;
+
+  const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-  }
+  };
 
-  function handleSubmit(e) {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formType === 'signup') {
-      setMessage(`Account created for ${form.username || form.email}!`);
-    } else {
-      setMessage(`Signed in as ${form.username || form.email}!`);
-    }
+    setError("");
+    setMessage("");
+    
+    try {
+      if (isSignUp) {
+        await createUserWithEmailAndPassword(auth, form.email, form.password);
+        setMessage(`Account created and signed in as ${form.email}`);
+      } else {
+        await signInWithEmailAndPassword(auth, form.email, form.password);
+        setMessage(`Signed in as ${form.email}`);
+      }
+  } catch (err) {
+    setError("Authentication failed: " + err.message);
   }
+  };
 
-  function toggleForm() {
-    setFormType(formType === 'signup' ? 'signin' : 'signup');
-    setForm({ username: '', email: '', password: '' }); // reset form
-    setMessage('');
+  const handleSignOut = async () => {
+  try {
+    await signOut(auth);
+    setForm({ email: "", password: "" });
+    setMessage("");
+    setError("");
+  } catch (err) {
+    setError("Sign out failed: " + err.message);
   }
+};
 
   return (
-    <div
-      className="home-container"
-      style={{ paddingTop: "100px", textAlign: "center" }}
-    >
+    <div className="home-container">
       <h2>Welcome to All Nighter!</h2>
       <p>
-        With this website, you can plan, create flashcards, quiz yourself, and
-        view your progress.
+        Use the planner, flashcards, quizzes, and progress tracker to study efficiently.
       </p>
-      <p>Before getting started, please sign in or create an account below.</p>
+      <p>
+        Before proceeding, please create an account or sign in below.
+      </p>
 
-      <div
-        style={{ maxWidth: "400px", margin: "20px auto", textAlign: "left" }}
-      >
-        <button
-          onClick={toggleForm}
-          style={{
-            marginBottom: "20px",
-            padding: "10px",
-            width: "100%",
-            backgroundColor: "#a37cf0",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
-        >
-          Switch to {formType === "signup" ? "Sign In" : "Sign Up"}
-        </button>
-
+      {!isAuthenticated && (
         <form onSubmit={handleSubmit}>
-          <h3 style={{ textAlign: 'center' }}>
-            {formType === "signup" ? "Create Account" : "Sign In"}
-          </h3>
-
-          {formType === "signup" && (
-            <label>
-              Username:
-              <input
-                name="username"
-                type="text"
-                value={form.username}
-                onChange={handleChange}
-                required
-                // style={{ width: '100%', marginBottom: '10px' }}
-                style={{
-                  width: "100%",
-                  marginBottom: "15px",
-                  padding: "8px 8px", // makes input taller
-                  borderRadius: "12px",
-                  fontSize: "1rem",
-                  border: "1px solid #ccc",
-                  boxSizing: "border-box",
-                }}
-              />
-            </label>
-          )}
-
-          <label>
-            Email:
-            <input
-              name="email"
-              type="email"
-              value={form.email}
-              onChange={handleChange}
-              required
-              style={{
-                  width: "100%",
-                  marginBottom: "15px",
-                  padding: "8px 8px", // makes input taller
-                  borderRadius: "12px",
-                  fontSize: "1rem",
-                  border: "1px solid #ccc",
-                  boxSizing: "border-box",
-                }}
-            />
-          </label>
-
-          <label>
-            Password:
-            <input
-              name="password"
-              type="password"
-              value={form.password}
-              onChange={handleChange}
-              required
-              style={{
-                  width: "100%",
-                  marginBottom: "15px",
-                  padding: "8px 8px", // makes input taller
-                  borderRadius: "12px",
-                  fontSize: "1rem",
-                  border: "1px solid #ccc",
-                  boxSizing: "border-box",
-                }}
-            />
-          </label>
-
           <button
-            type="submit"
-            style={{
-              width: "100%",
-              padding: "10px",
-              backgroundColor: "#6c56d9",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
+            type="button"
+            onClick={() => setIsSignUp(!isSignUp)}
+            style={{ marginBottom: "10px", marginTop: "10px" }}
           >
-            {formType === "signup" ? "Sign Up" : "Sign In"}
+            {isSignUp ? "Already have an account? Sign In" : "Create an Account"}
           </button>
-        </form>
 
-        {message && (
-          <p style={{ textAlign: 'center', color: "green", marginTop: "15px" }}>{message}</p>
-        )}
-      </div>
+          <h3>{isSignUp ? "Create Account" : "Sign In"}</h3>
+
+          <input style={{ marginBottom: "10px" }}
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={form.email}
+            onChange={handleChange}
+            required
+          />
+
+          <br/>
+
+          <input 
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={form.password}
+            onChange={handleChange}
+            required
+          />
+
+          <br/>
+
+          <button type="submit" style={{ marginTop: "15px" }}>
+            Submit
+          </button>
+
+          {message && <p style={{ color: "green", marginTop: "10px" }}>{message}</p>}
+          {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}
+        </form>
+      )}
+
+      {isAuthenticated && (
+        <div>
+          <h3>Welcome, {user?.email}!</h3>
+          <button onClick={handleSignOut}>Sign Out</button>
+        </div>
+      )}
+
     </div>
   );
 }
