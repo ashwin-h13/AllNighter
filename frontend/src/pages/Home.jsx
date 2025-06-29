@@ -11,6 +11,7 @@ export default function Home() {
   const [message, setMessage] = useState("");
   const [isSignUp, setIsSignUp] = useState(true);
   const [user, setUser] = useState(null);
+  const [data, setData] = useState("");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -19,6 +20,22 @@ export default function Home() {
 
     return () => unsubscribe(); // cleanup listener on unmount
   }, []);
+
+  // Fetch once on mount
+  useEffect(() => {
+    fetch("http://localhost:5000/api/test")
+      .then((res) => res.json())
+      .then((json) => setData(json.message))
+      .catch((err) => console.error("Fetch error:", err));
+  }, []);
+
+  // React to data updates
+  useEffect(() => {
+    if (data) {
+      console.log("Data changed:", data);
+      // Do something with the updated data
+    }
+  }, [data]);
 
   const isAuthenticated = !!user;
 
@@ -63,6 +80,9 @@ export default function Home() {
       </p>
       <p>
         Before proceeding, please create an account or sign in below.
+      </p>
+      <p>
+        {data}
       </p>
 
       {!isAuthenticated && (
