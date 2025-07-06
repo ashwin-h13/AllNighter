@@ -1,14 +1,35 @@
 
 
 body {
+  position: relative;
   font-family: 'Roboto', sans-serif;
-  background-color: #282c34;
-  /* color: #e6ddd6; */
+  background-color: white;
   color: white;
   height: 100%;
-  /* margin: 0;
-  padding: 0; */
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* prevent scrollbars from blur overflow */
+  z-index: 0;       /* make sure body content is above the blur */
 }
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: url('/night-sky.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+  filter: none; /* no blur */
+  background-color: rgba(0, 0, 0, 0.5); /* dark overlay */
+  background-blend-mode: darken;
+  z-index: -1;  /* behind body content */
+  /* optionally slightly darken or add overlay */
+  /* background-color: rgba(0, 0, 0, 0.3); */
+}
+
+
 
 .title-link {
   text-decoration: none;
@@ -89,6 +110,10 @@ body {
   width: 100%; 
 }
 
+.navbar-right a.active::after {
+  width: 100%;
+}
+
 .home-container {
   padding-top: 150px;
   display: flex;
@@ -100,21 +125,6 @@ body {
   text-align: center;
   /* padding: 20px; */
   box-sizing: border-box;
-  background-color: #282c34;
-  color: white;
-}
-
-.planner-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center; 
-  align-items: center;     
-  min-height: 100vh;       
-  width: 100vw; 
-  text-align: center;
-  padding: 20px;
-  box-sizing: border-box;
-  background-color: #282c34;
   color: white;
 }
 

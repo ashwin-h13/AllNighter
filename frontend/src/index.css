@@ -28,6 +28,7 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background-image: url('/night-sky.png'); /* or '/night-sky.png' if in /public */
 }
 
 h1 {
