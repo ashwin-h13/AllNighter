@@ -4,6 +4,7 @@ const app = express();
 const PORT = 5000;
 const cors = require('cors');
 const { connectToDB } = require("./db");
+const plannerRoutes = require('./routes/planner');
 
 app.use(cors({
   origin: 'http://localhost:5173', // or the port your React app runs on
@@ -17,14 +18,7 @@ app.use(express.json());
 connectToDB().then(() => {
   console.log("Connected to MongoDB");
 
-  // Basic route
-  app.get('/', (req, res) => {
-    res.send('Hello from Express backend!');
-  });
-
-  app.get('/api/test', (req, res) => {
-    res.json({ message: 'Hello from the nd!!!!!' });
-  });
+  app.use('/api/planner', plannerRoutes);
 
   // Start the server
   app.listen(PORT, () => {
